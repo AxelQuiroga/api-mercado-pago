@@ -14,7 +14,7 @@ export type Env = z.infer<typeof envSchema>;
 export type EnvSource = Record<string, string | undefined>;
 
 export class EnvValidationError extends Error {
-  constructor(public readonly fieldErros: Record<string, string[] | undefined>){
+  constructor(public readonly fieldErrors: Record<string, string[] | undefined>){
     super('Variables de entorno invalidas');
     this.name = 'EnvValidationError';
   }

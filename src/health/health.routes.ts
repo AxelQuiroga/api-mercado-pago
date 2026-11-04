@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { loadEnv, type Env } from "../config/env.js";
+import { type Env } from "../config/env.js";
 import { HealthController } from "../health/health.controller.js";
 
 export function createHealthRouter(env: Env): Router {
