@@ -3,6 +3,7 @@ import { MercadoPagoClient } from './mercadopago.client.js';
 import { MercadoPagoConnectionError } from './mercadopago.errors.js';
 import { MercadoPagoHttpError } from './mercadopago.errors.js';
 import { MercadoPagoInvalidResponseError } from './mercadopago.errors.js';
+import type { MercadoPagoPreferenceRequest } from './mercadopago.types.js';
 
 describe('MercadoPagoClient', () => {
   it('getMe devuelve el usuario en respuesta 200', async () => {
@@ -103,5 +104,27 @@ describe('MercadoPagoClient', () => {
           fetchImpl: vi.fn() as unknown as typeof fetch,
         }),
     ).toThrow();
+  });
+
+  it('Happy path', async () => {
+    const fetchMock = vi.fn().mockResolvedValue(
+      new Response(JSON.stringify({ id: 1, init_point: 'https://example.com', sandbox_init_point: 'https://example.com', items: {title: 'test',quantity: 1, unit_price: 20, currency_id: 'ARS'} }), {status:201})
+    );
+
+    const client = new MercadoPagoClient({
+      accessToken: 'TEST-token',
+      fetchImpl: fetchMock as unknown as typeof fetch,
+    });
+
+    const result = await client.createPreference({back_urls: {success: 'https://example.com/success'}, items: [{title: 'test',quantity: 1, unit_price: 20, currency_id: 'ARS'}]});
+    expect(result.id).toBe(1)
+    expect(result.init_point).toBe('https://example.com')
+    expect(fetchMock).toHaveBeenCalledWith('https://api.mercadopago.com/checkout/preferences', expect.objectContaining({
+      method: 'POST',
+      headers: expect.objectContaining({
+        Authorization: 'Bearer TEST-token',
+      }),
+      body: JSON.stringify({back_urls: {success: 'https://example.com/success'},items: [{title: 'test',quantity: 1, unit_price: 20, currency_id: 'ARS'}]}),
+    }));
   });
 });

@@ -62,6 +62,6 @@ export interface MercadoPagoPayer {
 
 export interface MercadoPagoBackUrls {
   success: string;
-  failure: string;
-  pending: string;
+  failure?: string;
+  pending?: string;
 }

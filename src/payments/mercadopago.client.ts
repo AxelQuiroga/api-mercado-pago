@@ -1,4 +1,4 @@
-import type { MercadoPagoClientOptions, MercadoPagoUser } from './mercadopago.types.js';
+import type { MercadoPagoClientOptions, MercadoPagoUser, MercadoPagoPreference, MercadoPagoPreferenceRequest } from './mercadopago.types.js';
 import {
   MercadoPagoConnectionError,
   MercadoPagoHttpError,
@@ -25,7 +25,7 @@ export class MercadoPagoClient {
         return this.request<MercadoPagoUser>('GET','/users/me');
     }
 
-    private async request<T>(method: string,  path: string): Promise<T>{
+    private async request<T>(method: string,  path: string, body?: unknown): Promise<T>{
         const url = `${this.baseUrl}${path}`;
 
         let response: Response;
@@ -36,7 +36,8 @@ export class MercadoPagoClient {
                     Authorization: `Bearer ${this.accessToken}`,
                     Accept: 'application/json',
                     'Content-Type': 'application/json',
-                }
+                },
+                ...(body !== undefined && { body: JSON.stringify(body) }),
             })
         } catch (error) {
             throw  new MercadoPagoConnectionError(`No se pudo conectar con Mercado Pago`, { cause: error instanceof Error ? error : undefined },
@@ -69,6 +70,10 @@ export class MercadoPagoClient {
         } catch (error) {
             return text;
         }
+    }
+
+    public createPreference(input: MercadoPagoPreferenceRequest): Promise<MercadoPagoPreference>{
+        return this.request<MercadoPagoPreference>('POST', '/checkout/preferences', input);
     }
 }
 
