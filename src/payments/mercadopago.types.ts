@@ -1,18 +1,18 @@
 export interface MercadoPagoClientOptions {
   accessToken: string;
-  baseUrl?: string;
-  fetchImpl?: typeof fetch;
+  baseUrl?: string | undefined;
+  fetchImpl?: typeof fetch | undefined;
 }
 
 export interface MercadoPagoUser {
   id: number;
-  nickname?: string;
-  first_name?: string;
-  last_name?: string;
-  email?: string;
-  country_id?: string;
-  site_id?: string;
-  registration_date?: string;
+  nickname?: string | undefined;
+  first_name?: string | undefined;
+  last_name?: string | undefined;
+  email?: string | undefined;
+  country_id?: string | undefined;
+  site_id?: string | undefined;
+  registration_date?: string | undefined;
 }
 
 export interface MercadoPagoPreferenceItem {
@@ -20,19 +20,41 @@ export interface MercadoPagoPreferenceItem {
   quantity: number;
   unit_price: number;
   currency_id: string;
-  description?: string;
-  picture_url?: string;
-  category_id?: string;
+  description?: string | undefined;
+  picture_url?: string | undefined;
+  category_id?: string | undefined;
+}
+
+export interface MercadoPagoPayerPhone {
+  area_code?: string | undefined;
+  number?: string | undefined;
+}
+
+export interface MercadoPagoPayerIdentification {
+  type?: string | undefined;
+  number?: string | undefined;
+}
+
+export interface MercadoPagoPayer {
+  email?: string | undefined;
+  phone?: MercadoPagoPayerPhone | undefined;
+  identification?: MercadoPagoPayerIdentification | undefined;
+}
+
+export interface MercadoPagoBackUrls {
+  success: string;
+  failure?: string | undefined;
+  pending?: string | undefined;
 }
 
 export interface MercadoPagoPreferenceRequest {
   items: MercadoPagoPreferenceItem[];
-  payer?: MercadoPagoPayer;
-  back_urls?: MercadoPagoBackUrls;
-  auto_return?: 'approved' | 'all';
-  notification_url?: string;
-  external_reference?: string;
-  statement_descriptor?: string;
+  payer?: MercadoPagoPayer | undefined;
+  back_urls?: MercadoPagoBackUrls | undefined;
+  auto_return?: 'approved' | 'all' | undefined;
+  notification_url?: string | undefined;
+  external_reference?: string | undefined;
+  statement_descriptor?: string | undefined;
 }
 
 export interface MercadoPagoPreference {
@@ -40,28 +62,4 @@ export interface MercadoPagoPreference {
   init_point: string;
   sandbox_init_point: string;
   date_created: string;
-}
-
-
-
-export interface MercadoPagoPayerPhone {
-    area_code?: string,
-    number?: string
-}
-
-export interface MercadoPagoPayerIdentification {
-    type?: string,
-    number?: string
-}
-
-export interface MercadoPagoPayer {
-    email?: string,
-    phone?: MercadoPagoPayerPhone,
-    identification?: MercadoPagoPayerIdentification
-}
-
-export interface MercadoPagoBackUrls {
-  success: string;
-  failure?: string;
-  pending?: string;
 }
