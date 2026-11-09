@@ -180,4 +180,70 @@ describe('MercadoPagoClient', () => {
       expect(error).toBeInstanceOf(MercadoPagoInvalidResponseError);
     }
   })
+
+  it('getMePayment devuelve el usuario en respuesta 200', async () => {
+    const fetchMock = vi.fn().mockResolvedValueOnce(
+      new Response(JSON.stringify({ id: 123, status: 'approved', transaction_amount: 100, currency_id: 'ARS'}), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      })
+    )
+
+    const client = new MercadoPagoClient({
+      accessToken: 'TEST-token',
+      fetchImpl: fetchMock as unknown as typeof fetch,
+    })
+
+    const user = await client.getPayment(123);
+
+    expect(user.id).toBe(123);
+    expect(user.status).toBe('approved');
+    expect(user.transaction_amount).toBe(100);
+    expect(user.currency_id).toBe('ARS');
+    expect(fetchMock).toHaveBeenCalledWith(
+      'https://api.mercadopago.com/v1/payments/123',
+      expect.objectContaining({
+        method: 'GET',
+        headers: expect.objectContaining({
+          Authorization: 'Bearer TEST-token',
+        }),
+      })
+    )
+  })
+
+  it('getPayment lanza error 404', async () => {
+    const fetchMock = vi.fn().mockResolvedValueOnce(
+      new Response(JSON.stringify({ message: 'payment not found'}), { status: 400, statusText: 'Bad Request' })
+    )
+
+    const client = new MercadoPagoClient({
+      accessToken: 'TEST-token',
+      fetchImpl: fetchMock as unknown as typeof fetch,
+    });
+
+    try {
+      await client.getPayment(123);
+      throw new Error('se esperaba que lanzara')
+    } catch (error) {
+      expect(error).toBeInstanceOf(MercadoPagoHttpError);
+      expect((error as MercadoPagoHttpError).status).toBe(400);
+      expect((error as MercadoPagoHttpError).body).toEqual({ message: 'payment not found' });
+    }
+  })
+
+  it('getPayment lanza error de conexion', async () => {
+    const fetchMock = vi.fn().mockRejectedValueOnce(new TypeError('Failed to fetch'));
+
+    const client = new MercadoPagoClient({
+      accessToken: 'TEST-token',
+      fetchImpl: fetchMock as unknown as typeof fetch,
+    })
+
+    try {
+      await client.getPayment(123);
+      throw new Error('se esperaba que lanzara')
+    } catch (error) {
+      expect(error).toBeInstanceOf(MercadoPagoConnectionError);
+    }
+  })
 });

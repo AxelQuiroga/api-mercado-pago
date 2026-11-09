@@ -63,3 +63,18 @@ export interface MercadoPagoPreference {
   sandbox_init_point: string;
   date_created: string;
 }
+
+export type MercadoPagoPaymentStatus = 
+  | 'pending' 
+  | 'approved' 
+  | 'rejected' 
+  | 'cancelled' 
+  | 'expired';
+
+export interface MercadoPagoPayment {
+  id: number,
+  status: MercadoPagoPaymentStatus,
+  transaction_amount: number,
+  currency_id: string,
+  external_reference?: string | undefined
+}

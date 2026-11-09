@@ -1,4 +1,4 @@
-import type { MercadoPagoClientOptions, MercadoPagoUser, MercadoPagoPreference, MercadoPagoPreferenceRequest } from './mercadopago.types.js';
+import type { MercadoPagoClientOptions, MercadoPagoUser, MercadoPagoPreference, MercadoPagoPreferenceRequest, MercadoPagoPayment } from './mercadopago.types.js';
 import {
   MercadoPagoConnectionError,
   MercadoPagoHttpError,
@@ -74,6 +74,10 @@ export class MercadoPagoClient {
 
     public createPreference(input: MercadoPagoPreferenceRequest): Promise<MercadoPagoPreference>{
         return this.request<MercadoPagoPreference>('POST', '/checkout/preferences', input);
+    }
+
+    async getPayment(paymentId: string | number): Promise<MercadoPagoPayment> {
+        return this.request<MercadoPagoPayment>('GET', `/v1/payments/${paymentId}`);
     }
 }
 
