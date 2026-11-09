@@ -14,13 +14,13 @@ export const preferenceItemSchema = z.object({
 });
 
 export const backUrlsSchema = z.object({
-  success: z.string().url('URL de éxito inválida'),
-  failure: z.string().url('URL de fallo inválida').optional(),
-  pending: z.string().url('URL de pendiente inválida').optional(),
+  success: z.url({ error: 'URL de éxito inválida' }),
+  failure: z.url({ error: 'URL de fallo inválida' }).optional(),
+  pending: z.url({ error: 'URL de pendiente inválida' }).optional(),
 });
 
 export const payerSchema = z.object({
-  email: z.string().email('Email inválido').optional(),
+  email: z.email({ error: 'Email inválido' }).optional(),
 });
 
 export const createPreferenceSchema = z.object({
