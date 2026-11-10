@@ -2,11 +2,13 @@ import type { NextFunction, Request, RequestHandler, Response } from "express";
 import { type Env } from "../config/env.js";
 import type { MercadoPagoClient } from "./mercadopago.client.js";
 import { CreatePreferenceService } from "./create-preference.service.js";
+import type { ProcessPaymentWebhookService } from "./process-webhook.service.js";
 
 export class PaymentsController {
   constructor(
     private readonly mercadoPagoClient: MercadoPagoClient,
     private readonly createPreferenceService: CreatePreferenceService,
+    private readonly processPaymentWebhookService: ProcessPaymentWebhookService,
   ) {}
 
   getMe: RequestHandler = async (
@@ -30,4 +32,13 @@ export class PaymentsController {
       next(error);
     }
   };
+
+  handleWebhook: RequestHandler = async (req, res, next) => {
+    try {
+      const result = await this.processPaymentWebhookService.execute(req.body);
+      res.status(200).json({received: true, handled: result.handled});
+    } catch (error) {
+      next(error);
+    }
+  }
 }
